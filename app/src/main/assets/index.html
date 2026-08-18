@@ -273,6 +273,36 @@
       font-size: .82rem;
       line-height: 1.45;
     }
+
+    @media (max-height: 800px) {
+      body {
+        min-height: 100dvh;
+        align-items: start;
+        justify-items: center;
+        padding: max(8px, env(safe-area-inset-top))
+                 max(12px, env(safe-area-inset-right))
+                 max(8px, env(safe-area-inset-bottom))
+                 max(12px, env(safe-area-inset-left));
+      }
+
+      main {
+        padding: 12px 14px;
+        border-radius: 16px;
+      }
+
+      .sub { margin-bottom: 8px; }
+      .section { margin-top: 10px; }
+      select, .toggles, .symbol-grid, .password-row { margin-top: 4px; }
+      .toggles, .symbol-grid, .actions { gap: 6px; }
+      .output { margin-top: 12px; }
+      .actions { margin-top: 6px; }
+      .status { margin-top: 4px; }
+      .note {
+        margin-top: 8px;
+        padding-top: 8px;
+        line-height: 1.35;
+      }
+    }
   </style>
 </head>
 <body>

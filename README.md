@@ -17,7 +17,7 @@ password storage.
 - No third-party runtime libraries
 - No network, database, cookies, local storage, or Android backup
 - Sensitive clipboard metadata on supported Android versions
-- Screenshot and Recent Apps preview protection
+- Screenshot and Recent Apps preview protection in release builds
 
 ## Privacy and security
 
@@ -31,6 +31,9 @@ software may still be able to observe clipboard contents. Save copied passwords
 promptly in a trusted password manager.
 
 The app depends on the Android System WebView supplied and updated by the device.
+
+Release builds block screenshots and Recent Apps previews. Debug builds allow
+screenshots so maintainers can capture documentation and test the interface.
 
 ## Build
 
@@ -67,9 +70,8 @@ key passwords, or a populated `local.properties` file.
 
 ## Screenshot
 
-A real device or emulator screenshot will be added after the final adaptive icon
-set is installed. Screenshot capture is intentionally blocked in production by
-Android's secure-window flag.
+A real device or emulator screenshot can be captured from a debug build. Release
+builds intentionally block screenshot capture with Android's secure-window flag.
 
 ## License
 
