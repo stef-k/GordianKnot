@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="color-scheme" content="dark light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'; frame-src 'none'; object-src 'none'">
+  <title>Gordian Knot</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: light;
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --card2: #edf2f8;
+      --output: #f7f9fc;
+      --text: #172033;
+      --muted: #58657a;
+      --border: #cbd5e1;
+      --accent: #087ca7;
+      --accent-text: #ffffff;
+      --danger: #b42318;
+      --ok: #18794e;
+      --shadow: rgba(23, 32, 51, .12);
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --card: #151c30;
+      --card2: #1b243b;
+      --output: #0d1427;
+      --text: #f5f7fb;
+      --muted: #aab3c5;
+      --border: #2a3653;
+      --accent: #7dd3fc;
+      --accent-text: #062033;
+      --danger: #fca5a5;
+      --ok: #86efac;
+      --shadow: rgba(0, 0, 0, .25);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg: #0b1020;
+        --card: #151c30;
+        --card2: #1b243b;
+        --output: #0d1427;
+        --text: #f5f7fb;
+        --muted: #aab3c5;
+        --border: #2a3653;
+        --accent: #7dd3fc;
+        --accent-text: #062033;
+        --danger: #fca5a5;
+        --ok: #86efac;
+        --shadow: rgba(0, 0, 0, .25);
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: max(20px, env(safe-area-inset-top))
+               max(16px, env(safe-area-inset-right))
+               max(20px, env(safe-area-inset-bottom))
+               max(16px, env(safe-area-inset-left));
+    }
+
+    main {
+      width: min(100%, 520px);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 20px 50px var(--shadow);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .theme-control { flex: 0 0 auto; }
+    .theme-control label {
+      display: block;
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    .theme-control select {
+      width: auto;
+      min-height: 44px;
+      margin-top: 4px;
+      padding: 8px 30px 8px 10px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.35rem;
+    }
+
+    .sub {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .section {
+      margin-top: 18px;
+    }
+
+    label, legend {
+      font-weight: 650;
+      font-size: .92rem;
+    }
+
+    select, button, input[type="text"], input[type="password"] {
+      font: inherit;
+    }
+
+    select {
+      width: 100%;
+      margin-top: 8px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--card2);
+      color: var(--text);
+      min-height: 48px;
+    }
+
+    .toggles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .toggle {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      user-select: none;
+      min-height: 48px;
+    }
+
+    .symbol-grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .symbol-option {
+      position: relative;
+    }
+
+    .symbol-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .symbol-option span {
+      display: block;
+      padding: 10px 8px;
+      text-align: center;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: .9rem;
+      min-height: 48px;
+      display: grid;
+      place-items: center;
+    }
+
+    .symbol-option input:checked + span {
+      outline: 2px solid var(--accent);
+      border-color: transparent;
+    }
+
+    .symbol-option input:focus-visible + span,
+    button:focus-visible,
+    select:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .output {
+      margin-top: 20px;
+    }
+
+    .password-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    #password {
+      width: 100%;
+      min-width: 0;
+      padding: 13px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--output);
+      color: var(--text);
+      letter-spacing: .04em;
+      font-family: ui-monospace, "Cascadia Mono", "Roboto Mono", monospace;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: var(--card2);
+      color: var(--text);
+      font-weight: 650;
+      cursor: pointer;
+      min-height: 48px;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: var(--accent-text);
+      border: none;
+    }
+
+    .actions {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .status {
+      min-height: 1.3em;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .strength {
+      margin-top: 8px;
+      font-size: .86rem;
+      color: var(--muted);
+    }
+
+    .strength.warning { color: var(--danger); }
+    .strength.good { color: var(--ok); }
+
+    .note {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.45;
+    }
+
+    @media (max-height: 800px) {
+      body {
+        min-height: 100dvh;
+        align-items: start;
+        justify-items: center;
+        padding: max(8px, env(safe-area-inset-top))
+                 max(12px, env(safe-area-inset-right))
+                 max(8px, env(safe-area-inset-bottom))
+                 max(12px, env(safe-area-inset-left));
+      }
+
+      main {
+        padding: 12px 14px;
+        border-radius: 16px;
+      }
+
+      .sub { margin-bottom: 8px; }
+      .section { margin-top: 10px; }
+      select, .toggles, .symbol-grid, .password-row { margin-top: 4px; }
+      .toggles, .symbol-grid, .actions { gap: 6px; }
+      .output { margin-top: 12px; }
+      .actions { margin-top: 6px; }
+      .status { margin-top: 4px; }
+      .note {
+        margin-top: 8px;
+        padding-top: 8px;
+        line-height: 1.35;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="header-row">
+      <div>
+        <h1>Gordian Knot</h1>
+        <p class="sub">Private passwords, generated entirely on your device.</p>
+      </div>
+      <div class="theme-control">
+        <label for="theme">Theme</label>
+        <select id="theme" aria-label="Color theme">
+          <option value="system" selected>System</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+    </div>
+
+    <section class="section">
+      <label for="length">Password length</label>
+      <select id="length">
+        <option value="6">6</option>
+        <option value="8">8</option>
+        <option value="10">10</option>
+        <option value="12">12</option>
+        <option value="14">14</option>
+        <option value="16">16</option>
+        <option value="20" selected>20</option>
+        <option value="24">24</option>
+        <option value="32">32</option>
+        <option value="40">40</option>
+        <option value="64">64</option>
+      </select>
+      <div id="strength" class="strength good">Recommended default for normal use.</div>
+    </section>
+
+    <fieldset class="section" style="border:0;padding:0;margin-inline:0">
+      <legend>Character groups</legend>
+      <div class="toggles">
+        <label class="toggle"><input id="lower" type="checkbox" checked> a-z</label>
+        <label class="toggle"><input id="upper" type="checkbox" checked> A-Z</label>
+        <label class="toggle"><input id="digits" type="checkbox" checked> 0-9</label>
+      </div>
+    </fieldset>
+
+    <fieldset class="section" style="border:0;padding:0;margin-inline:0">
+      <legend>Special characters</legend>
+      <div class="symbol-grid">
+        <label class="symbol-option">
+          <input type="radio" name="symbols" value="none">
+          <span>None</span>
+        </label>
+        <label class="symbol-option">
+          <input type="radio" name="symbols" value="basic" checked>
+          <span>Basic !@#$%</span>
+        </label>
+        <label class="symbol-option">
+          <input type="radio" name="symbols" value="common">
+          <span>Common</span>
+        </label>
+        <label class="symbol-option">
+          <input type="radio" name="symbols" value="extended">
+          <span>Extended</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <section class="output">
+      <label for="password">Generated password</label>
+      <div class="password-row">
+        <input id="password" type="password" readonly autocomplete="off" spellcheck="false">
+        <button id="show" type="button">Show</button>
+      </div>
+      <div class="actions">
+        <button id="generate" type="button">Generate</button>
+        <button id="copy" class="primary" type="button">Copy</button>
+      </div>
+      <div id="status" class="status" aria-live="polite"></div>
+    </section>
+
+    <div class="note">
+      No password or setting is saved. Clipboard contents may be visible to Android
+      and other apps, so copy only when needed and save it promptly.
+    </div>
+  </main>
+
+  <script>
+    "use strict";
+
+    const SETS = {
+      lower: "abcdefghijklmnopqrstuvwxyz",
+      upper: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      digits: "0123456789",
+      none: "",
+      basic: "!@#$%",
+      common: "!@#$%^&*_-+=",
+      extended: "!@#$%^&*_-+=[]{}:,.?~"
+    };
+
+    const els = {
+      length: document.getElementById("length"),
+      theme: document.getElementById("theme"),
+      lower: document.getElementById("lower"),
+      upper: document.getElementById("upper"),
+      digits: document.getElementById("digits"),
+      password: document.getElementById("password"),
+      show: document.getElementById("show"),
+      generate: document.getElementById("generate"),
+      copy: document.getElementById("copy"),
+      status: document.getElementById("status"),
+      strength: document.getElementById("strength")
+    };
+
+    function randomUint32() {
+      const buf = new Uint32Array(1);
+      crypto.getRandomValues(buf);
+      return buf[0];
+    }
+
+    // Rejection sampling avoids modulo bias.
+    function secureIndex(max) {
+      if (!Number.isInteger(max) || max <= 0) {
+        throw new Error("Invalid random range.");
+      }
+
+      const limit = Math.floor(0x100000000 / max) * max;
+
+      while (true) {
+        const value = randomUint32();
+        if (value < limit) {
+          return value % max;
+        }
+      }
+    }
+
+    function secureChar(chars) {
+      return chars[secureIndex(chars.length)];
+    }
+
+    function secureShuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = secureIndex(i + 1);
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function selectedGroups() {
+      const groups = [];
+
+      if (els.lower.checked) groups.push(SETS.lower);
+      if (els.upper.checked) groups.push(SETS.upper);
+      if (els.digits.checked) groups.push(SETS.digits);
+
+      const symbolLevel =
+        document.querySelector('input[name="symbols"]:checked')?.value || "none";
+
+      if (SETS[symbolLevel]) {
+        groups.push(SETS[symbolLevel]);
+      }
+
+      return groups;
+    }
+
+    function updateStrengthLabel() {
+      const length = Number(els.length.value);
+
+      els.strength.className = "strength";
+
+      if (length <= 8) {
+        els.strength.textContent =
+          "Legacy / low-security length. Use only where longer passwords are not accepted.";
+        els.strength.classList.add("warning");
+      } else if (length < 16) {
+        els.strength.textContent =
+          "Shorter than the recommended default.";
+        els.strength.classList.add("warning");
+      } else {
+        els.strength.textContent =
+          "Recommended range for normal use.";
+        els.strength.classList.add("good");
+      }
+    }
+
+    function generatePassword() {
+      const length = Number(els.length.value);
+      const groups = selectedGroups();
+
+      if (groups.length === 0) {
+        els.status.textContent = "Enable at least one character group.";
+        els.password.value = "";
+        return;
+      }
+
+      if (length < groups.length) {
+        els.status.textContent =
+          "Length is too short for all enabled character groups.";
+        els.password.value = "";
+        return;
+      }
+
+      const combined = groups.join("");
+      const result = [];
+
+      // Guarantee at least one character from every selected group.
+      for (const group of groups) {
+        result.push(secureChar(group));
+      }
+
+      while (result.length < length) {
+        result.push(secureChar(combined));
+      }
+
+      secureShuffle(result);
+
+      els.password.value = result.join("");
+      els.status.textContent = "";
+    }
+
+    async function copyPassword() {
+      if (!els.password.value) {
+        generatePassword();
+      }
+
+      if (!els.password.value) return;
+
+      try {
+        if (window.AndroidBridge && typeof window.AndroidBridge.copyToClipboard === "function") {
+          if (!window.AndroidBridge.copyToClipboard(els.password.value)) {
+            throw new Error("Clipboard unavailable");
+          }
+        } else {
+          await navigator.clipboard.writeText(els.password.value);
+        }
+        els.status.textContent = "Copied to clipboard.";
+      } catch {
+        els.password.focus();
+        els.password.select();
+        els.status.textContent =
+          "Clipboard access was blocked. Password selected for manual copy.";
+      }
+    }
+
+    els.generate.addEventListener("click", generatePassword);
+    els.copy.addEventListener("click", copyPassword);
+
+    function applyTheme(theme) {
+      document.documentElement.dataset.theme = theme === "system" ? "" : theme;
+      if (window.AndroidBridge && typeof window.AndroidBridge.setTheme === "function") {
+        window.AndroidBridge.setTheme(theme);
+      }
+    }
+
+    els.theme.addEventListener("change", () => applyTheme(els.theme.value));
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      if (els.theme.value === "system") applyTheme("system");
+    });
+
+    els.show.addEventListener("click", () => {
+      const showing = els.password.type === "text";
+      els.password.type = showing ? "password" : "text";
+      els.show.textContent = showing ? "Show" : "Hide";
+    });
+
+    els.length.addEventListener("change", () => {
+      updateStrengthLabel();
+      generatePassword();
+    });
+
+    [els.lower, els.upper, els.digits].forEach(el =>
+      el.addEventListener("change", generatePassword)
+    );
+
+    document.querySelectorAll('input[name="symbols"]').forEach(el =>
+      el.addEventListener("change", generatePassword)
+    );
+
+    updateStrengthLabel();
+    applyTheme("system");
+    generatePassword();
+  </script>
+</body>
+</html>
