@@ -88,6 +88,15 @@ separate project key. Never commit keystores, signing passwords, or a populated
 `local.properties` file. Losing the release key prevents future APKs from
 upgrading an existing installation.
 
+Release builds require these environment variables:
+
+- `GORDIAN_KNOT_STORE_FILE`
+- `GORDIAN_KNOT_STORE_PASSWORD`
+- `GORDIAN_KNOT_KEY_ALIAS`
+- `GORDIAN_KNOT_KEY_PASSWORD`
+
+With those values set, build the signed APK with `./gradlew assembleRelease`.
+
 ## Project status
 
 Gordian Knot is intentionally narrow in scope. Features that add accounts,
